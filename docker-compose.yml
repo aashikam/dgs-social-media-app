@@ -1,0 +1,11 @@
+version: '3'
+services:
+    my-mysql-container:
+        image: mysql:8.0
+        container_name: my-mysql-container
+        environment:
+            MYSQL_ROOT_PASSWORD: Test@123
+            MYSQL_DATABASE: dgs_social_media
+            MYSQL_PASSWORD: Test@123
+        ports:
+            - 3306:3306
