@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Handles graphql queries and mutations for posts.
+ */
 @DgsComponent
 public class PostDataFetcher {
     PostService postService;
@@ -31,24 +34,25 @@ public class PostDataFetcher {
     }
 
     @DgsData(parentType = "Mutation", field = "createPost")
-    public Post createPost(@InputArgument("post") NewPost newPost, @RequestHeader("userId") String userId) {
+    public Post createPost(@InputArgument("post") NewPost newPost, @RequestHeader("Authorization") String userId) {
         Post post = new Post();
         post.setId(UUID.randomUUID().toString());
         post.setTitle(newPost.getTitle());
         post.setContent(newPost.getContent());
         if (userService.getUserById(userId) != null) {
             post.setUser(userService.getUserById(userId));
+            return postService.savePost(post);
+        } else {
+            throw new RuntimeException("User not authorized.");
         }
-        return postService.savePost(post);
     }
 
-    // todo: authorization header
     @DgsData(parentType = "Mutation", field = "deletePost")
-    public Post deletePost(@InputArgument String id, @RequestHeader("userId") String userId) {
+    public Post deletePost(@InputArgument String id, @RequestHeader("Authorization") String userId) {
         if (userService.getUserById(userId) != null) {
             return postService.deletePost(id);
         } else {
-            throw new RuntimeException("User not authorized");
+            throw new RuntimeException("User not authorized.");
         }
     }
 
@@ -56,5 +60,4 @@ public class PostDataFetcher {
     public Publisher<Post> newPosts() {
         return postService.getPostsPublisher();
     }
-
 }

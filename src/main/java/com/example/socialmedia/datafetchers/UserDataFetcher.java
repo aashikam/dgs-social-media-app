@@ -10,8 +10,10 @@ import com.netflix.graphql.dgs.InputArgument;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
+/**
+ * Handles graphql queries and mutations for users.
+ */
 @DgsComponent
 public class UserDataFetcher {
     UserService userService;
@@ -41,6 +43,10 @@ public class UserDataFetcher {
 
     @DgsData(parentType = "Mutation", field = "deleteUser")
     public User deleteUser(@InputArgument String id) {
-        return userService.deleteUser(id);
+        if (userService.getUserById(id) != null) {
+            return userService.deleteUser(id);
+        } else {
+            throw new RuntimeException("User not found.");
+        }
     }
 }

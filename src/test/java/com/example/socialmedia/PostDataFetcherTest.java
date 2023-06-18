@@ -57,81 +57,62 @@ class PostDataFetcherTest {
 
     @Test
     void testPostsQuery() {
-        // Arrange
         List<Post> posts = Collections.singletonList(new Post());
         when(postService.getAllPosts()).thenReturn(posts);
 
-        // Act
         List<Post> result = postDataFetcher.posts();
-
-        // Assert
         assertEquals(posts.size(), result.size());
     }
 
     @Test
     void testCreatePostMutation() {
-        // Arrange
         NewPost newPost = new NewPost();
         newPost.setTitle("Sample Title");
         newPost.setContent("Sample Content");
 
-        String userId = "12345"; // Using the authorized user ID
+        String userId = "12345";
 
         Post savedPost = new Post();
         savedPost.setId(UUID.randomUUID().toString());
         savedPost.setTitle(newPost.getTitle());
         savedPost.setContent(newPost.getContent());
 
-        when(userService.getUserById(eq(userId))).thenReturn(new User()); // Assuming the user exists
+        when(userService.getUserById(eq(userId))).thenReturn(new User());
         when(postService.savePost(any(Post.class))).thenReturn(savedPost);
 
-        // Create a mock HTTP request with the userId in the header
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("userId", userId);
 
-        // Act
         Post result = postDataFetcher.createPost(newPost, request.getHeader("userId"));
 
-        // Assert
         assertEquals(newPost.getTitle(), result.getTitle());
         assertEquals(newPost.getContent(), result.getContent());
     }
 
     @Test
     void testDeletePostMutation_WhenUserAuthorized() {
-        // Arrange
         String postId = authorizedUserPost.getId();
-        String userId = "12345"; // Using the authorized user ID
+        String userId = authorizedUser.getId();
 
-        when(userService.getUserById(eq(userId))).thenReturn(new User()); // Assuming the user exists
+        when(userService.getUserById(eq(userId))).thenReturn(new User());
         when(postService.deletePost(eq(postId))).thenReturn(authorizedUserPost);
 
-        // Create a mock HTTP request with the userId in the header
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("userId", userId);
 
-        // Act
         Post result = postDataFetcher.deletePost(postId, request.getHeader("userId"));
-
-        // Assert
         assertEquals(postId, result.getId());
     }
 
     @Test
     void testDeletePostMutation_WhenUserNotAuthorized() {
-        // Arrange
         String postId = UUID.randomUUID().toString();
         String userId = UUID.randomUUID().toString();
 
-        when(userService.getUserById(eq(userId))).thenReturn(null); // Assuming the user doesn't exist
+        when(userService.getUserById(eq(userId))).thenReturn(null);
 
-        // Create a mock HTTP request with the userId in the header
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("userId", userId);
-
-        // Act and Assert
         assertThrows(RuntimeException.class, () -> postDataFetcher.deletePost(postId, request.getHeader("userId")));
     }
 }
-
-

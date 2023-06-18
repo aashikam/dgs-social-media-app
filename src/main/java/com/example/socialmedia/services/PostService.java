@@ -48,6 +48,9 @@ public class PostService {
     }
 
     public Post deletePost(String id) {
+        if (postRepository.findById(id).isEmpty()) {
+            throw new RuntimeException("Post not found.");
+        }
         Post post = postRepository.findById(id).orElse(null);
         postRepository.deleteById(id);
         return post;
@@ -56,5 +59,4 @@ public class PostService {
     public Publisher<Post> getPostsPublisher() {
         return reviewsPublisher;
     }
-    // Add other methods as needed
 }

@@ -1,6 +1,12 @@
 package com.example.socialmedia.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
@@ -13,7 +19,6 @@ public class User {
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", columnDefinition = "VARCHAR(36)")
     private String id;
-
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -28,14 +33,6 @@ public class User {
 
     @Column(name = "age", nullable = false)
     private Integer age;
-
-    public List<Post> getPosts() {
-        return posts;
-    }
-
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
-    }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts;
@@ -56,28 +53,11 @@ public class User {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", posts=" + getAllPostsToString() +
-                '}';
+    public List<Post> getPosts() {
+        return posts;
     }
 
-    public String getAllPostsToString() {
-        if (posts == null || posts.isEmpty()) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (Post post : posts) {
-            sb.append(post.toString());
-            sb.append(System.lineSeparator()); // Add line separator for readability
-        }
-        return sb.toString();
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
     }
-
-    // getters and setters (omitted for brevity)
 }
-
-

@@ -9,5 +9,4 @@ public class DgsSocialMediaApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DgsSocialMediaApplication.class, args);
 	}
-
 }

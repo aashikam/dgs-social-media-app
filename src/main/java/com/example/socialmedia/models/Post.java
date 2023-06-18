@@ -1,6 +1,13 @@
 package com.example.socialmedia.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
@@ -12,9 +19,13 @@ public class Post {
     @Column(name = "id", columnDefinition = "VARCHAR(36)")
     private String id;
 
-
     private String title;
+
     private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     public String getId() {
         return id;
@@ -47,18 +58,4 @@ public class Post {
     public void setUser(User user) {
         this.user = user;
     }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @Override
-    public String toString() {
-        return "Post{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                '}';
-    }
-
-    // getters and setters (omitted for brevity)
 }
